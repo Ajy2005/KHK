@@ -5,36 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Karnal HighSchool, Karnal - Home</title>
       <!-- Basic Favicon -->
-  <link rel="icon" href="favicon.ico" sizes="any"> <!-- Modern browsers will use this for ICO -->
-
-  <!-- SVG Favicon (for modern browsers) -->
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-
-  <!-- Apple Touch Icon (for iPhones and iPads) -->
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-
-  <!-- Web App Manifest (for Android and progressive web apps) -->
-  <link rel="manifest" href="site.webmanifest">
-
-  <!-- Optional: A fallback for very old browsers -->
-  <link rel="shortcut icon" href="favicon.ico">
+    <link rel="icon" href="web logo/favicon.ico" sizes="any">
+    <!-- SVG Favicon (for modern browsers) -->
+    <link rel="icon" href="web logo/favicon.svg" type="image/svg+xml">
+    <!-- Apple Touch Icon (for iPhones and iPads) -->
+    <link rel="apple-touch-icon" href="web logo/apple-touch-icon.png">
+    <!-- Web App Manifest (for Android and progressive web apps) -->
+    <link rel="manifest" href="site.webmanifest">
+    <!-- Optional: A fallback for very old browsers -->
+    <link rel="shortcut icon" href="web logo/favicon.ico">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    
     <link rel="stylesheet" href="styles.css">
+
+    <!-- NEW: Internal CSS for the login link styles -->
+    <style>
+        .top-header .container > .width-100 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .staff-login-link a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .staff-login-link a:hover {
+            color: #ffdddd;
+        }
+        .staff-login-link i {
+            margin-right: 6px;
+        }
+    </style>
 </head>
 <body>
 
     <!-- TOP HEADER WITH LATEST NEWS -->
     <div class="width-100 top-header">
         <div class="container">
+            <!-- UPDATED: This div is now a flex container -->
             <div class="width-100">
-                <b class="news-list">Latest News:</b>
-                <marquee class="headquote" behavior="scroll" direction="left">
-                    <span class="news-item">Independence Day celebration on August 15th. Join us for flag hoisting and cultural events!</span>
-                </marquee>
+                <div class="news-ticker-container" style="display: flex; align-items: center;">
+                    <b class="news-list">Latest News:</b>
+                    <marquee class="headquote" behavior="scroll" direction="left">
+                        <span class="news-item">Independence Day celebration on August 15th. Join us for flag hoisting and cultural events!</span>
+                    </marquee>
+                </div>
+
+                <!-- NEW: Staff Login Link -->
+                <div class="staff-login-link">
+                    <a href="login.html">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        Staff Login
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN HEADER WITH LOGO, SCHOOL NAME, AND NAVIGATION -->
+    <!-- MAIN HEADER WITH LOGO, SCHOOL NAME, AND NAVIGATION (Unchanged) -->
     <header class="width-100 header-menu">
         <div class="container">
             <div class="header-top-content">
@@ -63,12 +96,12 @@
         </div>
     </header>
 
-    <!-- SLIDER / HERO IMAGE SECTION -->
+    <!-- SLIDER / HERO IMAGE SECTION (Unchanged) -->
     <div class="width-100 slider-container">
         <img class="slider" src="images/slider1.jpeg" alt="Karnal High School building and grounds">
     </div>
 
-    <!-- MAIN CONTENT AREA -->
+    <!-- MAIN CONTENT AREA (Unchanged) -->
     <div class="width-100 margin-top-50">
         <div class="container main-content-area">
             <div class="main-content-left">
@@ -101,7 +134,7 @@ Our school provides a safe and supportive environment where students are encoura
         </div>
     </div>
 
-    <!-- PHOTO GALLERY PREVIEW SECTION -->
+    <!-- PHOTO GALLERY PREVIEW SECTION (Unchanged) -->
     <div id="gallery-preview" class="width-100 margin-top-50 gallery-section">
         <div class="container">
             <div class="section-heading">
@@ -127,36 +160,38 @@ Our school provides a safe and supportive environment where students are encoura
     <footer class="width-100 footer-section">
         <div class="container">
             <div class="footer-grid">
-    <!-- WIDGET 1: ABOUT -->
-    <div class="footer-widget">
-        <h3 class="widget-title">About Karnal HighSchool, Karnal</h3>
-        <p>Committed to providing quality education and fostering an environment of growth, knowledge, and discipline for the bright future of our students.</p>
-    </div>
-    
-    <!-- WIDGET 2: SCHOOL INFORMATION (NEW) -->
-    <div class="footer-widget">
-        <h3 class="widget-title">School Information</h3>
-        <ul class="school-details-list">
-            <li><strong>School Reg.No.:</strong> एस.एस.(एस.एस.एल) इन.एल/पीआर,पुणा - 4 दि. 21 एप्रिल 1964</li>
-            <li><strong>UDISE No.:</strong> 27350501703</li>
-            <li><strong>Medium:</strong> मराठी</li>
-            <li><strong>Board:</strong> MSBSHSE</li>
-            <li><strong>Index No.:</strong> 22.06.017</li>
-        </ul>
-    </div>
-    <!-- WIDGET 3: QUICK LINKS -->
-    <div class="footer-widget">
-        <h3 class="widget-title">Quick Links</h3>
-        <ul class="quick-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Admission</a></li>
-            <li><a href="gallery.html">Gallery</a></li>
-            <li><a href="#">Notice Board</a></li>
-            <li><a href="#">Contact Us</a></li>
-            <li><a href="security-policy.html">Security Policy</a></li> <!-- ADD THIS LINE -->
-        </ul>
-    </div>
+                <!-- WIDGET 1: ABOUT -->
+                <div class="footer-widget">
+                    <h3 class="widget-title">About Karnal HighSchool, Karnal</h3>
+                    <p>Committed to providing quality education and fostering an environment of growth, knowledge, and discipline for the bright future of our students.</p>
+                </div>
+                
+                <!-- WIDGET 2: SCHOOL INFORMATION -->
+                <div class="footer-widget">
+                    <h3 class="widget-title">School Information</h3>
+                    <ul class="school-details-list">
+                        <li><strong>School Reg.No.:</strong> एस.एस.(एस.एस.एल) इन.एल/पीआर,पुणा - 4 दि. 21 एप्रिल 1964</li>
+                        <li><strong>UDISE No.:</strong> 27350501703</li>
+                        <li><strong>Medium:</strong> मराठी</li>
+                        <li><strong>Board:</strong> MSBSHSE</li>
+                        <li><strong>Index No.:</strong> 22.06.017</li>
+                    </ul>
+                </div>
+                <!-- WIDGET 3: QUICK LINKS -->
+                <div class="footer-widget">
+                    <h3 class="widget-title">Quick Links</h3>
+                    <ul class="quick-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Admission</a></li>
+                        <li><a href="gallery.html">Gallery</a></li>
+                        <li><a href="#">Notice Board</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <!-- ADDED: Staff Login Link -->
+                        <li><a href="login.html">Staff Login</a></li>
+                        <li><a href="security-policy.html">Security Policy</a></li>
+                    </ul>
+                </div>
                 <div class="footer-widget">
                     <h3 class="widget-title">Contact Us</h3>
                     <p><strong>Address:</strong> <a href="https://share.google/JelLaE2gXrl7kujiD">Karnal HighSchool, Karnal, Tal-Miraj, Dist-Sangli, Maharashtra.</a> </p>
