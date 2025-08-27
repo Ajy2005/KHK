@@ -57,10 +57,10 @@ body {
     flex-wrap: wrap;
 }
 
+/* --- Header Logo Size Fix --- */
 .logo img {
-    max-width: 250px;
-    height: auto;
-    margin-right: 20px;
+    max-height: 80px; /* Adjust this value as needed */
+    width: auto;      /* This ensures the image scales proportionally */
 }
 
 .school-name {
