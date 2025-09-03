@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karnal Highschool - Staff Dashboard</title>
+    <link rel="icon" href="images/logo.jpeg" sizes="any">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <style>
+        /* --- CORE STYLES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px; background-color: #f4f7fa; color: #333; }
+        .hidden { display: none !important; }
+        .card { background-color: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+
+        /* --- LOGIN SCREEN --- */
+        .login-container{position:fixed;top:0;left:0;width:100%;height:100%;background-color:#f4f7fa;display:flex;justify-content:center;align-items:center;z-index:1000}
+        .login-box{background-color:#fff;padding:40px;border-radius:8px;box-shadow:0 5px 20px rgba(0,0,0,.1);width:100%;max-width:400px;text-align:center;border-top:5px solid #d9534f}
+        .login-logo-container{margin-bottom:25px}.login-logo-container img{max-width:150px;height:auto}
+        .login-box h2{margin-bottom:25px;color:#333;font-size:1.6rem}
+        .login-box .input-group{margin-bottom:20px;text-align:left}
+        .login-box label{display:block;margin-bottom:5px;font-weight:500;color:#555}
+        .login-box input{width:100%;padding:12px 15px;border:1px solid #ccc;border-radius:5px;font-size:1rem}
+        .login-box button{width:100%;padding:12px;border:none;border-radius:5px;background-color:#d9534f;color:#fff;font-size:1.1rem;font-weight:600;cursor:pointer;transition:background-color .3s}
+        .login-box button:disabled{background-color:#95a5a6;cursor:not-allowed}
+        .login-box button:hover:not(:disabled){background-color:#c9302c}
+        .error-message{color:#d9534f;margin-top:15px;font-weight:500;min-height:20px}
+        .switch-login-method{margin-top:20px;color:#4a90e2;cursor:pointer;font-size:.9rem}
+        
+        /* --- DASHBOARD & LAYOUT --- */
+        .dashboard-container{display:flex;opacity:0;transition:opacity .5s ease}.dashboard-container.visible{opacity:1}
+        .sidebar{width:260px;background-color:#2c3e50;color:#fff;height:100vh;padding:20px;position:fixed;top:0;left:0;overflow-y:auto}
+        .sidebar-header{text-align:center;margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid #4a627a}
+        .sidebar-logo{max-width:180px;margin-bottom:15px}
+        .sidebar-header h2{font-size:1.3rem}
+        .sidebar-nav ul{list-style:none;padding:0}
+        .sidebar-nav li a{display:block;color:#ecf0f1;text-decoration:none;padding:15px 20px;border-radius:5px;margin-bottom:10px;transition:background-color .3s}
+        .sidebar-nav li a.active,.sidebar-nav li a:hover{background-color:#d9534f;color:#fff}
+        .sidebar-nav li a i{margin-right:15px;width:20px}
+        .main-content{margin-left:260px;width:calc(100% - 260px);padding:30px}
+        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
+        .header h1{font-size:2rem;color:#333}
+        .user-profile{display:flex;align-items:center;font-size:1rem}
+        .user-profile span{margin-right:15px}
+        .logout-btn{background:0 0;border:none;color:#d9534f;font-size:1.5rem;cursor:pointer}
+        
+        /* --- WIDGETS & TABLES --- */
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:30px}
+        .stat-card{padding:25px;color:#fff;border-radius:8px;position:relative;overflow:hidden}
+        .stat-card i{position:absolute;top:50%;right:20px;transform:translateY(-50%);font-size:4.5rem;opacity:.2}
+        .stat-card h2{font-size:3rem;margin-bottom:5px}.stat-card p{font-size:1.1rem;font-weight:500}
+        .color-red{background-color:#d9534f}.color-teal{background-color:#26a69a}.color-green{background-color:#5cb85c}.color-blue{background-color:#428bca}
+        .dashboard-layout{display:flex;gap:20px;align-items:flex-start}.main-column{flex:3}.side-column{flex:1}
+        .student-table{width:100%;border-collapse:collapse}
+        .student-table td,.student-table th{padding:12px 15px;text-align:left;border-bottom:1px solid #eee}
+        .student-table th{background-color:#f4f7fa;font-weight:600;color:#555}
+        .student-table tbody tr:hover{background-color:#f9f9f9}
+        .error-message-table,.loading-message{text-align:center;padding:20px;color:#777;font-style:italic}
+        .student-table .actions button{padding:5px 10px;border:none;border-radius:4px;color:#fff;cursor:pointer;margin-right:5px;font-size:.85rem}
+        .student-table .btn-edit{background-color:#428bca}.student-table .btn-bonafide{background-color:#5cb85c}.student-table .btn-lc{background-color:#f0ad4e;}
+        .announcements-card h2{display:flex;align-items:center;margin-bottom:15px;font-size:1.3rem}
+        .announcements-card h2 i{margin-right:10px;color:#d9534f}
+        .announcements-card ul{list-style:none;padding-left:5px}
+        .announcements-card li{padding:10px 0;border-bottom:1px solid #eee;font-size:.95rem}
+        .announcements-card li:last-child{border-bottom:none}.announcements-card li span{font-size:.8rem;color:#777;display:block;margin-top:4px}
+        .pm-poshan-iframe { width: 100%; height: 85vh; border: none; border-radius: 8px; }
+        
+        /* --- FORMS --- */
+        .admission-form-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+        .form-group{margin-bottom:18px}
+        .form-group label{display:block;font-weight:600;color:#555;margin-bottom:6px}
+        .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:1px solid #ccc;border-radius:5px;font-size:1rem}
+        .radio-group{display:flex;align-items:center;gap:20px}
+        .radio-group label{font-weight:400;margin-bottom:0}
+        .radio-group input{margin-right:5px}
+        .form-actions{margin-top:30px;display:flex;gap:15px}
+        .form-actions button{padding:12px 25px;border:none;border-radius:5px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:background-color .3s}
+        .form-actions .btn-submit{background-color:#d9534f;color:#fff}
+        .form-actions .btn-submit:hover{background-color:#c9302c}
+        .form-actions .btn-cancel{background-color:#777;color:#fff}
+        .form-actions .btn-cancel:hover{background-color:#555}
+
+        /* --- CERTIFICATE STYLES --- */
+        .print-btn-container{margin-top:30px;text-align:center}
+        .lc-body { font-family: 'Tiro Devanagari Marathi', serif; } 
+        .lc-container { width: 210mm; min-height: 297mm; background: #fff; padding: 1.5cm; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1); position: relative; margin: 20px auto; } .lc-header { text-align: center; position: relative; } .lc-header .logo { position: absolute; left: 0; top: 0; width: 70px; height: 70px; } .lc-header .duplicate { position: absolute; right: 10px; top: 10px; color: red; font-size: 24px; border-bottom: 2px solid red; transform: rotate(-5deg); } .lc-header .motto { font-size: 14px; font-weight: bold; } .lc-header .sanstha-name { font-size: 16px; font-weight: bold; } .lc-header .school-name { font-size: 36px; font-weight: bold; margin: 5px 0; } .lc-header .address { font-size: 16px; } .lc-reg-info { font-size: 12px; padding: 8px 0; border-top: 1px solid #000; border-bottom: 1px solid #000; margin-top: 10px; display: flex; flex-wrap: wrap; justify-content: space-between; } .lc-main-title-box { background: #000; color: #fff; text-align: center; padding: 5px; font-size: 20px; font-weight: bold; margin: 15px auto; width: 50%; } .lc-year-info { display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; margin-bottom: 5px; } .lc-details-table { width: 100%; border-collapse: collapse; border: 2px solid #000; font-size: 14px; } .lc-details-table td { border: 1px solid #000; padding: 8px; vertical-align: top; } .lc-details-table td:first-child { width: 35%; } .lc-label { font-weight: bold; } .lc-certification-line { text-align: center; font-size: 14px; padding: 10px; font-weight: bold; } .lc-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; font-size: 14px; } .lc-footer-section { text-align: center; } .lc-footer-section .signature-placeholder { height: 40px; margin-bottom: 5px; } .lc-footer-section .stamp-placeholder { width: 100px; height: 100px; border: 2px double #555; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #888; }
+        .bf-body { font-family: Arial, sans-serif; }
+        .bf-container { background: #fff; width: 210mm; min-height: 148mm; padding: 1cm; box-sizing: border-box; border: 2px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; margin: auto; }
+        .bf-header { display: flex; align-items: center; gap: 15px; } .bf-logo { width: 60px; height: 60px; border-radius: 50%; flex-shrink: 0; }
+        .bf-header-text { text-align: center; flex-grow: 1; } .bf-header-text h3 { font-size: 14px; font-weight: normal; margin: 0; } .bf-header-text h1 { font-size: 24px; margin: 4px 0; } .bf-header-text p { font-size: 11px; margin: 1px 0; } .bf-divider { border: 0; border-top: 1px solid #000; margin: 10px 0; }
+        .bf-title-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; } .bf-certificate-title span { font-weight: bold; font-size: 16px; border: 2px solid black; padding: 4px 12px; } .bf-reg-no { font-size: 12px; } .bf-student-id-section p { font-size: 12px; margin: 3px 0; } .bf-dotted-divider { border: 0; border-top: 1px dotted #000; margin: 10px 0; }
+        .bf-main-content { font-size: 14px; line-height: 1.6; flex-grow: 1; } .bf-main-content p { margin: 8px 0; }
+        .bf-details-table { width: 100%; font-size: 14px; border-collapse: collapse; } .bf-details-table td { padding: 2px 0; }
+        .bf-footer-section { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; } .bf-footer-left { font-size: 14px; } .bf-footer-right { text-align: center; } .bf-stamp-placeholder { width: 80px; height: 80px; border: 2px double #888; border-radius: 50%; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #888; }
+        .bf-headmaster-details { font-size: 14px; line-height: 1.4; } .bf-bold { font-weight: bold; }
+        
+        /* --- PRINT STYLES --- */
+        @media print { 
+            body * { visibility: hidden; } 
+            .printable-certificate, .printable-certificate * { visibility: visible; } 
+            .printable-certificate { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; border: none; margin: 0; padding: 0; } 
+            .main-content.print-mode { padding: 0; margin: 0; } 
+            .main-content.print-mode .header, .main-content.print-mode > .card { display: none; }
+            .print-btn-container { display: none !important; } 
+            @page { size: A4; margin: 0; }
+            .bf-container { @page { size: A5 landscape; margin: 0; }}
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-container" class="login-container">
+        <div class="login-box">
+            <div class="login-logo-container"><img src="images/logo.jpeg" alt="Karnal Highschool Logo"></div>
+            <h2>Staff Login</h2>
+            <div id="email-login-view">
+                <form id="login-form">
+                    <div class="input-group"><label for="email">Email</label><input type="email" id="email" required></div>
+                    <div class="input-group"><label for="password">Password</label><input type="password" id="password" required></div>
+                    <button type="submit">Login</button>
+                </form>
+                <p class="switch-login-method" onclick="app.toggleLoginView('phone')">Or, Login with Mobile OTP</p>
+            </div>
+            <div id="phone-login-view" class="hidden">
+                <form id="phone-login-form">
+                    <div class="input-group"><label for="phone-number">Mobile Number</label><input type="tel" id="phone-number" placeholder="+91 98765 43210" required></div>
+                    <button id="send-otp-btn" type="submit">Send OTP</button>
+                </form>
+                <p class="switch-login-method" onclick="app.toggleLoginView('email')">Or, Login with Email</p>
+            </div>
+            <div id="otp-login-view" class="hidden">
+                <form id="otp-login-form">
+                    <p>Enter the 6-digit code sent to your mobile.</p>
+                    <div class="input-group"><label for="otp-code">OTP Code</label><input type="number" id="otp-code" required></div>
+                    <button id="verify-otp-btn" type="submit">Verify OTP</button>
+                </form>
+                <p class="switch-login-method" onclick="app.toggleLoginView('phone')">Change Number</p>
+            </div>
+            <p id="error-message" class="error-message"></p>
+            <div id="recaptcha-container"></div>
+        </div>
+    </div>
+
+    <div id="dashboard-container" class="hidden">
+        <div class="sidebar">
+            <div class="sidebar-header"> <img src="images/logo.jpeg" alt="Karnal Highschool Logo" class="sidebar-logo"> <h2>Staff Dashboard</h2> </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#dashboard-view" class="active"><i class="fa-solid fa-table-columns"></i> Dashboard</a></li>
+                    <li><a href="#catalogue-view"><i class="fa-solid fa-users"></i> Student Catalogue</a></li>
+                    <li><a href="#admission-view"><i class="fa-solid fa-user-plus"></i> New Admission</a></li>
+                    <li><a href="#bonafide-view"><i class="fa-solid fa-file-circle-check"></i> Generate Bonafide</a></li>
+                    <li><a href="#lc-view"><i class="fa-solid fa-file-invoice"></i> Generate LC</a></li>
+                    <li><a href="#pm-poshan-view"><i class="fa-solid fa-utensils"></i> PM Poshan</a></li>
+                </ul>
+            </nav>
+        </div>
+        <main class="main-content">
+            <header class="header">
+                <div> <h1 id="main-header-title">Dashboard</h1> </div>
+                <div class="user-profile"> <span id="user-email"></span> <button id="logout-btn" class="logout-btn" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button> </div>
+            </header>
+
+            <section id="dashboard-view" class="content-view">
+                <div class="stats-grid"><div class="stat-card color-red"><h2 id="total-students-stat">...</h2><p>Total Active Students</p><i class="fa-solid fa-users"></i></div><div class="stat-card color-teal"><h2 id="total-boys-stat">...</h2><p>Total Boys</p><i class="fa-solid fa-person"></i></div><div class="stat-card color-green"><h2 id="total-girls-stat">...</h2><p>Total Girls</p><i class="fa-solid fa-person-dress"></i></div><div class="stat-card color-blue"><h2 id="total-classes-stat">...</h2><p>Total Classes</p><i class="fa-solid fa-school"></i></div></div>
+                <div class="dashboard-layout">
+                    <div class="main-column"><div class="card"><h2>Active Student Roster (Top 10)</h2><table class="student-table"><thead><tr><th>Reg. No</th><th>Name</th><th>Class</th><th>Gender</th></tr></thead><tbody id="student-table-body"></tbody></table></div></div>
+                    <div class="side-column"><div class="announcements-card card"><h2><i class="fa-solid fa-bullhorn"></i> Announcements</h2><ul><li>Unit Test exams will begin next week. <span>Posted: 1 day ago</span></li><li>Annual sports day registrations are now open. <span>Posted: 3 days ago</span></li></ul></div></div>
+                </div>
+            </section>
+
+            <section id="catalogue-view" class="content-view hidden">
+                <div class="card"><h2>Student Catalogue (Active Students Only)</h2><table class="student-table"><thead><tr><th>Reg. No</th><th>Name</th><th>Class</th><th>Gender</th><th>Actions</th></tr></thead><tbody id="all-students-table-body"></tbody></table></div>
+            </section>
+
+            <section id="admission-view" class="content-view hidden">
+                <div class="card">
+                    <h2 id="admission-form-title">New Admission Form</h2>
+                    <form id="admission-form"><input type="hidden" id="edit-mode-reg-no"><div class="admission-form-container"><div class="form-group"><label>Registration No. (Auto)</label><input type="text" name="Registration No." readonly></div><div class="form-group"><label>Name</label><input type="text" name="Name" required></div><div class="form-group"><label>Mother's Name</label><input type="text" name="Mother's Name"></div><div class="form-group"><label>Gender</label><div class="radio-group"><label><input type="radio" name="Gender" value="Male" checked> Male</label><label><input type="radio" name="Gender" value="Female"> Female</label></div></div><div class="form-group"><label>Nationality</label><input type="text" name="Nationality" value="Indian"></div><div class="form-group"><label>Mother Tongue</label><input type="text" name="Mother Tongue" value="Marathi"></div><div class="form-group"><label>Religion</label><input type="text" name="Religion"></div><div class="form-group"><label>Caste</label><input type="text" name="Caste"></div><div class="form-group"><label>Sub Caste</label><input type="text" name="Sub Caste"></div><div class="form-group"><label>Birth Place (Town/City)</label><input type="text" name="Place Of Birth"></div><div class="form-group"><label>Birth Place (Taluka)</label><input type="text" name="Birth Taluka"></div><div class="form-group"><label>Birth Place (District)</label><input type="text" name="Birth District"></div><div class="form-group"><label>Birth Place (State)</label><input type="text" name="Birth State" value="Maharashtra"></div><div class="form-group"><label>Birth Place (Country)</label><input type="text" name="Birth Country" value="India"></div><div class="form-group"><label>Date of Birth</label><input type="date" name="Date of birth" required></div><div class="form-group"><label>UID No.</label><input type="text" name="UID No."></div><div class="form-group"><label>Student ID</label><input type="text" name="Student Id"></div><div class="form-group"><label>Last School Attended</label><textarea name="Last School Attended" rows="2"></textarea></div><div class="form-group"><label>Date of Admission</label><input type="date" name="Date of Admission"></div><div class="form-group"><label>Admitted to Standard/Class</label><input type="text" name="STD and Class admitted into"></div><div class="form-group"><label>Progress</label><select name="Progress"><option>Good</option><option>Fair</option><option>Excellent</option></select></div><div class="form-group"><label>Conduct</label><select name="Conduct"><option>Good</option><option>Satisfactory</option></select></div><div class="form-group"><label>Date of Leaving School</label><input type="date" name="Date of leaving School"></div><div class="form-group"><label>Left from Standard/Class</label><input type="text" name="Left from Standard/Class"></div><div class="form-group"><label>Reason for Leaving</label><input type="text" name="Reason for Leaving"></div><div class="form-group"><label>Remarks</label><input type="text" name="Remarks"></div><div class="form-group"><label>Active / Transferred</label><input type="text" name="Active /Transefrd" value="Active"></div></div><div class="form-actions"><button type="submit" class="btn-submit">Submit</button><button type="button" class="btn-cancel" onclick="app.resetAdmissionForm(true)">Cancel</button></div></form>
+                </div>
+            </section>
+
+            <section id="bonafide-view" class="content-view hidden">
+                 <div class="card">
+                    <h2>Generate Bonafide Certificate</h2>
+                    <p id="bonafide-placeholder-text">Select a student from the catalogue to generate their certificate.</p>
+                    <div id="bonafide-content-wrapper"></div>
+                    <div id="bonafide-print-btn" class="print-btn-container hidden"><button class="btn-submit" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button></div>
+                </div>
+            </section>
+            
+            <section id="lc-view" class="content-view hidden">
+                <div class="card">
+                    <h2>Generate Leaving Certificate</h2>
+                    <p id="lc-placeholder-text">Select a student from the catalogue to generate their LC.</p>
+                </div>
+                <div id="lc-content-wrapper"></div>
+                <div id="lc-print-btn" class="print-btn-container hidden"><button class="btn-submit" onclick="window.print()"><i class="fa-solid fa-print"></i> Print LC</button></div>
+            </section>
+
+            <section id="pm-poshan-view" class="content-view hidden">
+                <div class="card">
+                    <h2>PM Poshan Daily Reporting</h2>
+                    <p style="margin-bottom: 20px; color: #555;">Use the tool below to manage and log daily PM Poshan stock.</p>
+                    <iframe src="https://script.google.com/macros/s/AKfycbyWHiIciR-BAyuH3Xxeh6LpC8u1x4mRScXKpwjboDxGw3f5Q6Oor1l8ws-sSmOe-oi9/exec" class="pm-poshan-iframe"></iframe>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- TEMPLATES -->
+    <template id="bonafide-template">
+        <div class="printable-certificate bf-body bf-container">
+            <header class="bf-header">
+                <img src="images/logo.jpeg" alt="School Logo" class="bf-logo">
+                <div class="bf-header-text">
+                    <h3>Jawahar Shikshan Sanstha, Karnal</h3>
+                    <h1>Karnal Highschool, Karnal</h1>
+                    <p>Alp Karnal, Tal Miraj, Dist Sangli 416416, U-DISE No.: 27350501703, 9022227102</p>
+                    <p><span class="bf-bold">{{ACADEMIC_YEAR}}</span></p>
+                </div>
+            </header>
+            <hr class="bf-divider">
+            <div class="bf-title-section">
+                <div style="flex:1;"></div>
+                <div class="bf-certificate-title"><span>Bonafide Certificate</span></div>
+                <div class="bf-reg-no" style="flex:1; text-align:right;"><span class="bf-bold">Reg No.</span> {{REG_NO}}</div>
+            </div>
+            <div class="bf-student-id-section">
+                <p><span class="bf-bold">UID No.(Aadhaar Card No.) :</span> {{UID}}</p>
+                <p><span class="bf-bold">Student Id :</span> {{STUDENT_ID}}</p>
+            </div>
+            <hr class="bf-dotted-divider">
+            <div class="bf-main-content">
+                <p>This is to certify that <span class="bf-bold">{{NAME}}</span> is a bonafide student of our school. His/Her conduct is good. He/She is studying in <span class="bf-bold">{{CLASS}}</span> from <span class="bf-bold">{{START_MONTH}}</span>. As per our records, the date of birth is <span class="bf-bold">{{DOB}}</span> (<span class="bf-bold">{{DOB_WORDS}}</span>).</p>
+                <table class="bf-details-table">
+                    <tr><td><span class="bf-bold">Religion:</span> {{RELIGION}}</td><td><span class="bf-bold">Caste:</span> {{CASTE}}</td><td><span class="bf-bold">Nationality:</span> Indian</td></tr>
+                    <tr><td colspan="3"><span class="bf-bold">Place Of Birth:</span> {{BIRTH_PLACE}}</td></tr>
+                </table>
+            </div>
+            <footer class="bf-footer-section">
+                <div class="bf-footer-left"><p><span class="bf-bold">Place:</span> Karnal</p><p><span class="bf-bold">Date:</span> {{CURRENT_DATE}}</p></div>
+                <div class="bf-footer-right"><div class="bf-stamp-placeholder">School Stamp</div><div class="bf-headmaster-details"><span class="bf-bold">Head Master</span><br>Karnal Highschool, Karnal</div></div>
+            </footer>
+        </div>
+    </template>
+
+    <template id="lc-template"><div class="printable-certificate lc-body lc-container"><header class="lc-header"><img src="images/logo.jpeg" class="logo"><div class="lc-duplicate">[Original]</div><p class="lc-motto">।। ज्ञान तेथे मान ।।</p><p class="lc-sanstha-name">{{SANSTHA_NAME}}</p><h1 class="lc-school-name">{{SCHOOL_NAME}}</h1><p class="lc-address">{{SCHOOL_ADDRESS}}</p></header><section class="lc-reg-info"><div><span class="lc-label">यु - डायस नं. :</span> [{{U_DISE}}]</div><div><span class="lc-label">Index No. :</span> [{{INDEX_NO}}]</div></section><div class="lc-main-title-box">शाळा सोडल्याचे प्रमाणपत्र</div><section class="lc-year-info"><div><span class="lc-label">वर्ष :</span> [{{ACADEMIC_YEAR}}]</div><div><span class="lc-label">जनरल रजि. क्र :</span> [{{REG_NO}}]</div></section><table class="lc-details-table"><tr><td><span class="lc-label">यु. आय.डी.नं. :</span></td><td>[{{UID}}]</td></tr><tr><td><span class="lc-label">विध्यार्थी आय.डी. :</span></td><td>[{{STUDENT_ID}}]</td></tr><tr><td><span class="lc-label">आईचे नाव :</span></td><td>[{{MOTHER_NAME}}]</td></tr><tr><td><span class="lc-label">राष्ट्रीयत्व :</span></td><td>[{{NATIONALITY}}]</td></tr><tr><td><span class="lc-label">मातृभाषा :</span></td><td>[{{MOTHER_TONGUE}}]</td></tr><tr><td><span class="lc-label">धर्म, जात, पोटजात :</span></td><td><span class="lc-label">धर्म :</span> [{{RELIGION}}] <span class="lc-label">जात :</span> [{{CASTE}}] <span class="lc-label">पोट जात :</span> [{{SUB_CAST}}]</td></tr><tr><td><span class="lc-label">जन्मस्थळ :</span></td><td><span class="lc-label">गाव :</span> [{{BIRTH_PLACE}}] <span class="lc-label">ता :</span> [{{BIRTH_TALUKA}}] <span class="lc-label">जि :</span> [{{BIRTH_DISTRICT}}]</td></tr><tr><td><span class="lc-label">जन्मदिनांक :</span></td><td>[{{DOB}}] ({{DOB_WORDS}})</td></tr><tr><td><span class="lc-label">यापूर्वी ची शाळा :</span></td><td>[{{LAST_SCHOOL}}]</td></tr><tr><td><span class="lc-label">प्रवेश घेतल्याचा दिनांक :</span></td><td>[{{ADMISSION_DATE}}], इ. {{CLASS}}</td></tr><tr><td><span class="lc-label">अभ्यासातील प्रगती :</span></td><td>[{{PROGRESS}}]</td></tr><tr><td><span class="lc-label">वर्तणूक :</span></td><td>[{{CONDUCT}}]</td></tr><tr><td><span class="lc-label">शाळा सोडल्याचा दिनांक :</span></td><td>[{{LEAVING_DATE}}]</td></tr><tr><td><span class="lc-label">कोणत्या इयत्तेत शिकत होता :</span></td><td>इ. {{LEAVING_CLASS}}</td></tr><tr><td><span class="lc-label">शाळा सोडण्याचे कारण :</span></td><td>[{{REASON_LEAVING}}]</td></tr><tr><td><span class="lc-label">शेरा :</span></td><td>[{{REMARK}}]</td></tr></table><div class="lc-certification-line">दाखला देणेत येतो की, वरील माहिती शाळेतील जनरल रजिस्टर नं. १ प्रमाणे दिली आहे.</div><footer class="lc-footer"><div class="lc-footer-section"><p><span class="lc-label">दि.</span> [{{CURRENT_DATE}}]</p><div class="lc-signature-placeholder"></div><p><span class="lc-label">लेखनिक</span></p></div><div class="lc-footer-section"><div class="lc-stamp-placeholder">[Round Seal]</div></div><div class="lc-footer-section"><div class="lc-signature-placeholder"></div><p><span class="lc-label">मुख्याध्यापक</span></p></div></footer></div></template>
+
+    <script>
+    const app = (() => {
+        // --- 1. CORE SETUP & CONFIGURATION ---
+        const CONFIG = {
+            firebase: { apiKey: "AIzaSyCu9C0ZpPnKzPCJ11gQc7Vlk3lnfaJH9fU", authDomain: "my-login-app-df9a7.firebaseapp.com", projectId: "my-login-app-df9a7", storageBucket: "my-login-app-df9a7.appspot.com", messagingSenderId: "325062660131", appId: "1:325062660131:web:09965afc828fcb26d76196" },
+            sheetUrls: { csv: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk0ZAp11S_amAlCAhGCpVfDFq1ZTfz7AspbzOEGZMM57hubJPitipsiQuPrGMcrc8FImynLMZsRYQp/pub?output=csv', post: 'https://script.google.com/macros/s/AKfycbwtWBVnzOKpFjWM5Oyo9gXMKSXN1vasfSgKvt_Zxq7aO9BBPg0F7OpHzXfEccv3--mG/exec' },
+            columnMap: {
+                STATUS: 'Active /Transefrd', REG_NO: 'Registration No.', NAME: 'Name', MOTHER_NAME: `Mother's Name`, GENDER: 'Gender', NATIONALITY: 'Nationality', MOTHER_TONGUE: 'Mother Tongue', RELIGION: 'Religion', CASTE: 'Caste', SUB_CAST: 'Sub Caste', BIRTH_PLACE: 'Place Of Birth', BIRTH_TALUKA: 'Birth Taluka', BIRTH_DISTRICT: 'Birth District', BIRTH_STATE: 'Birth State', BIRTH_COUNTRY: 'Birth Country', DOB: 'Date of birth', UID: 'UID No.', STUDENT_ID: 'Student Id', LAST_SCHOOL: 'Last School Attended', ADMISSION_DATE: 'Date of Admission', CLASS: 'STD and Class admitted into', PROGRESS: 'Progress', CONDUCT: 'Conduct', LEAVING_DATE: 'Date of leaving School', LEAVING_CLASS: 'Left from Standard/Class', REASON_LEAVING: 'Reason for Leaving', REMARK: 'Remarks'
+            },
+            schoolInfo: { SANSTHA_NAME: 'जवाहर शिक्षण संस्था, कर्नाळ', SCHOOL_NAME: 'कर्नाळ हायस्कूल, कर्नाळ', SCHOOL_ADDRESS: 'तालूका - मिरज, जिल्हा - सांगली.', U_DISE: '27350501703', INDEX_NO: '22.06.017' }
+        };
+
+        const state = { students: [], auth: null, recaptchaVerifier: null, confirmationResult: null };
+        const DOMElements = {
+            loginContainer: document.getElementById('login-container'), dashboardContainer: document.getElementById('dashboard-container'), userEmail: document.getElementById('user-email'), mainHeader: document.getElementById('main-header-title'), mainContent: document.querySelector('.main-content'), sidebarNav: document.querySelector('.sidebar-nav ul'), contentViews: document.querySelectorAll('.content-view'), studentTableBody: document.getElementById('student-table-body'), allStudentsTableBody: document.getElementById('all-students-table-body'), admissionForm: document.getElementById('admission-form'),
+            emailLoginView: document.getElementById('email-login-view'), phoneLoginView: document.getElementById('phone-login-view'), otpLoginView: document.getElementById('otp-login-view'), errorMessage: document.getElementById('error-message'),
+        };
+
+        // --- 2. HELPER & UTILITY FUNCTIONS ---
+        const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('en-GB') : '--';
+        
+        function toWords(num) {
+            const ones = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+            const tens = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+            const months = ['','January','February','March','April','May','June','July','August','September','October','November','December'];
+            if (typeof num === 'string' && (num.includes('-') || num.includes('/'))) {
+                const date = new Date(num);
+                if (isNaN(date)) return num;
+                const year = date.getFullYear(); const month = date.getMonth() + 1; const day = date.getDate();
+                let dayWords = day < 20 ? ones[day] : tens[Math.floor(day / 10)] + (day % 10 !== 0 ? ' ' + ones[day % 10] : '');
+                return `${dayWords} ${months[month]} ${toWords(year)}`;
+            }
+            if (num === 0) return 'Zero'; if (num < 0) return 'Minus ' + toWords(Math.abs(num)); let words = '';
+            if (Math.floor(num / 1000) > 0) { words += toWords(Math.floor(num / 1000)) + ' Thousand '; num %= 1000; }
+            if (Math.floor(num / 100) > 0) { words += ones[Math.floor(num / 100)] + ' Hundred '; num %= 100; }
+            if (num > 0) { if (words !== '') words += ''; if (num < 20) words += ones[num]; else { words += tens[Math.floor(num / 10)]; if (num % 10 > 0) words += ' ' + ones[num % 10]; } }
+            return words.trim();
+        }
+
+        function populateTemplate(templateId, data) { let html = document.getElementById(templateId).innerHTML; for (const key in data) { html = html.replace(new RegExp(`{{${key.toUpperCase()}}}`, 'g'), data[key] || '--'); } return html; }
+        
+        function parseCSV(csvText) { const lines = csvText.replace(/\r/g, "").trim().split('\n'); if (lines.length < 2) return []; const headers = lines[0].split(',').map(h => h.trim()); return lines.slice(1).map(line => { const values = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || []; const cleaned = values.map(v => v.replace(/^"|"$/g, '').trim()); const entry = {}; headers.forEach((header, i) => { entry[header] = cleaned[i] || ''; }); return entry; }); }
+        
+        // --- 3. DATA FETCHING ---
+        async function fetchStudentData() {
+            setLoadingState(true);
+            try {
+                const response = await fetch(`${CONFIG.sheetUrls.csv}&_=${new Date().getTime()}`);
+                if (!response.ok) throw new Error(`Network error`);
+                const csvText = await response.text();
+                const allStudents = parseCSV(csvText);
+                state.students = allStudents.filter(s => (s[CONFIG.columnMap.STATUS]?.toLowerCase().trim() === 'active') || (!s[CONFIG.columnMap.LEAVING_DATE] || s[CONFIG.columnMap.LEAVING_DATE].trim() === ''));
+                renderDashboard();
+                renderCatalogue();
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+                DOMElements.studentTableBody.innerHTML = `<tr><td colspan="4" class="error-message-table">Error loading data.</td></tr>`;
+                DOMElements.allStudentsTableBody.innerHTML = `<tr><td colspan="5" class="error-message-table">Error loading data.</td></tr>`;
+            } finally { setLoadingState(false); }
+        }
+
+        // --- 4. UI RENDERING & MANIPULATION ---
+        function setLoadingState(isLoading) { const stats = ['total-students-stat', 'total-boys-stat', 'total-girls-stat', 'total-classes-stat']; if (isLoading) { DOMElements.studentTableBody.innerHTML = `<tr><td colspan="4" class="loading-message">Loading...</td></tr>`; DOMElements.allStudentsTableBody.innerHTML = `<tr><td colspan="5" class="loading-message">Loading...</td></tr>`; stats.forEach(id => document.getElementById(id).textContent = '...'); } }
+        
+        function renderDashboard() {
+            updateStatCards(state.students);
+            const studentsToDisplay = state.students.slice(0, 10);
+            if (!studentsToDisplay.length) { DOMElements.studentTableBody.innerHTML = `<tr><td colspan="4" class="loading-message">No active students found.</td></tr>`; return; }
+            DOMElements.studentTableBody.innerHTML = studentsToDisplay.map(student => `<tr><td>${student[CONFIG.columnMap.REG_NO] || 'N/A'}</td><td>${student[CONFIG.columnMap.NAME] || 'N/A'}</td><td>${student[CONFIG.columnMap.CLASS] || 'N/A'}</td><td>${student[CONFIG.columnMap.GENDER] || 'N/A'}</td></tr>`).join('');
+        }
+        
+        function renderCatalogue() {
+            if (!state.students.length) { DOMElements.allStudentsTableBody.innerHTML = `<tr><td colspan="5" class="loading-message">No active students found.</td></tr>`; return; }
+            DOMElements.allStudentsTableBody.innerHTML = state.students.map(student => `<tr><td>${student[CONFIG.columnMap.REG_NO] || 'N/A'}</td><td>${student[CONFIG.columnMap.NAME] || 'N/A'}</td><td>${student[CONFIG.columnMap.CLASS] || 'N/A'}</td><td>${student[CONFIG.columnMap.GENDER] || 'N/A'}</td><td class="actions"><button class="btn-edit" data-reg-no="${student[CONFIG.columnMap.REG_NO]}">Edit</button><button class="btn-bonafide" data-reg-no="${student[CONFIG.columnMap.REG_NO]}">Bonafide</button><button class="btn-lc" data-reg-no="${student[CONFIG.columnMap.REG_NO]}">LC</button></td></tr>`).join('');
+        }
+
+        function updateStatCards(activeStudents) { document.getElementById('total-students-stat').textContent = activeStudents.length; document.getElementById('total-boys-stat').textContent = activeStudents.filter(s => s.Gender === 'Male').length; document.getElementById('total-girls-stat').textContent = activeStudents.filter(s => s.Gender === 'Female').length; document.getElementById('total-classes-stat').textContent = new Set(activeStudents.map(s => s[CONFIG.columnMap.CLASS])).size; }
+        
+        function switchView(viewId) { 
+            DOMElements.contentViews.forEach(view => view.classList.add('hidden')); 
+            document.getElementById(viewId)?.classList.remove('hidden'); 
+            DOMElements.sidebarNav.querySelectorAll('a').forEach(link => link.classList.remove('active')); 
+            const activeLink = DOMElements.sidebarNav.querySelector(`a[href="#${viewId}"]`); 
+            if (activeLink) { activeLink.classList.add('active'); DOMElements.mainHeader.textContent = activeLink.textContent.trim(); } 
+            DOMElements.mainContent.classList.toggle('print-mode', viewId === 'lc-view' || viewId === 'bonafide-view');
+        }
+
+        function toggleLoginView(view) {
+            DOMElements.errorMessage.textContent = '';
+            DOMElements.emailLoginView.classList.toggle('hidden', view !== 'email');
+            DOMElements.phoneLoginView.classList.toggle('hidden', view !== 'phone');
+            DOMElements.otpLoginView.classList.toggle('hidden', view !== 'otp');
+        }
+
+        // --- 5. EVENT HANDLERS & ACTIONS ---
+        function findStudentByRegNo(regNo) { return state.students.find(s => s[CONFIG.columnMap.REG_NO]?.toString() === regNo.toString()); }
+        
+        function handleActionClick(e) { 
+            const target = e.target; const regNo = target.dataset.regNo; if (!regNo) return; 
+            const student = findStudentByRegNo(regNo); if (!student) return alert('Student not found! Please refresh.'); 
+            if (target.classList.contains('btn-edit')) populateFormForEdit(student); 
+            if (target.classList.contains('btn-bonafide')) generateBonafide(student); 
+            if (target.classList.contains('btn-lc')) generateLC(student); 
+        }
+
+        function populateFormForEdit(student) { 
+            resetAdmissionForm(false); document.getElementById('edit-mode-reg-no').value = student[CONFIG.columnMap.REG_NO]; document.getElementById('admission-form-title').textContent = 'Edit Student Details'; DOMElements.admissionForm.querySelector('.btn-submit').textContent = 'Update Details'; 
+            for (const key in CONFIG.columnMap) { 
+                const sheetColumn = CONFIG.columnMap[key]; const input = DOMElements.admissionForm.querySelector(`[name="${sheetColumn}"]`); 
+                if (input) { 
+                    if (input.type === 'radio') { const radio = DOMElements.admissionForm.querySelector(`[name="${sheetColumn}"][value="${student[sheetColumn]}"]`); if (radio) radio.checked = true; } 
+                    else if (input.type === 'date' && student[sheetColumn]) { try { input.value = new Date(student[sheetColumn]).toISOString().split('T')[0]; } catch { input.value = ''; } } 
+                    else { input.value = student[sheetColumn] || ''; } 
+                } 
+            } 
+            switchView('admission-view'); 
+        }
+        
+        function generateBonafide(student) { 
+            const currentYear = new Date().getFullYear();
+            const data = { 
+                ...CONFIG.schoolInfo,
+                ACADEMIC_YEAR: `Academic Year : ${currentYear}-${(currentYear + 1).toString().slice(-2)}`,
+                START_MONTH: "June " + currentYear,
+                CURRENT_DATE: formatDate(new Date()),
+                NAME: student[CONFIG.columnMap.NAME],
+                REG_NO: student[CONFIG.columnMap.REG_NO],
+                UID: student[CONFIG.columnMap.UID],
+                STUDENT_ID: student[CONFIG.columnMap.STUDENT_ID],
+                CLASS: student[CONFIG.columnMap.CLASS],
+                DOB: formatDate(student[CONFIG.columnMap.DOB]),
+                DOB_WORDS: toWords(student[CONFIG.columnMap.DOB]),
+                RELIGION: student[CONFIG.columnMap.RELIGION],
+                CASTE: student[CONFIG.columnMap.CASTE],
+                BIRTH_PLACE: student[CONFIG.columnMap.BIRTH_PLACE],
+            };
+            document.getElementById('bonafide-content-wrapper').innerHTML = populateTemplate('bonafide-template', data); 
+            document.getElementById('bonafide-placeholder-text').classList.add('hidden'); 
+            document.getElementById('bonafide-print-btn').classList.remove('hidden'); 
+            switchView('bonafide-view'); 
+        }
+        
+        function generateLC(student) { 
+            const currentYear = new Date().getFullYear(); const data = { ...CONFIG.schoolInfo }; 
+            for (const key in CONFIG.columnMap) { data[key.toUpperCase()] = student[CONFIG.columnMap[key]]; } 
+            data.DOB_WORDS = toWords(student[CONFIG.columnMap.DOB]);
+            data.DOB = formatDate(student[CONFIG.columnMap.DOB]); 
+            data.ADMISSION_DATE = formatDate(student[CONFIG.columnMap.ADMISSION_DATE]); 
+            data.LEAVING_DATE = formatDate(student[CONFIG.columnMap.LEAVING_DATE]); 
+            data.CURRENT_DATE = formatDate(new Date()); 
+            data.ACADEMIC_YEAR = `${currentYear}-${(currentYear + 1).toString().slice(2)}`; 
+            document.getElementById('lc-content-wrapper').innerHTML = populateTemplate('lc-template', data); 
+            document.getElementById('lc-placeholder-text').classList.add('hidden'); 
+            document.getElementById('lc-print-btn').classList.remove('hidden'); 
+            switchView('lc-view'); 
+        }
+        
+        async function handleFormSubmit(e) { 
+            e.preventDefault(); const submitBtn = e.target.querySelector('.btn-submit'); submitBtn.disabled = true; submitBtn.textContent = 'Saving...'; 
+            const formData = new FormData(DOMElements.admissionForm); const data = Object.fromEntries(formData.entries()); 
+            const isUpdate = !!document.getElementById('edit-mode-reg-no').value; 
+            if (!isUpdate) { data[CONFIG.columnMap.REG_NO] = Math.max(0, ...state.students.map(s => parseInt(s[CONFIG.columnMap.REG_NO])).filter(n => !isNaN(n))) + 1; } 
+            else { data[CONFIG.columnMap.REG_NO] = document.getElementById('edit-mode-reg-no').value; } 
+            try { 
+                await fetch(CONFIG.sheetUrls.post, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ isUpdate, data }) }); 
+                await fetchStudentData(); // Re-fetch all data to ensure sync
+                alert(`Student data successfully ${isUpdate ? 'updated' : 'added'}!`); 
+                resetAdmissionForm(true); 
+            } catch (error) { console.error('Error submitting form:', error); alert('An error occurred.'); } 
+            finally { submitBtn.disabled = false; submitBtn.textContent = isUpdate ? 'Update Details' : 'Submit'; } 
+        }
+        
+        function resetAdmissionForm(navigateToDashboard = false) { 
+            DOMElements.admissionForm.reset(); document.getElementById('edit-mode-reg-no').value = ''; 
+            document.getElementById('admission-form-title').textContent = 'New Admission Form'; 
+            DOMElements.admissionForm.querySelector('.btn-submit').textContent = 'Submit'; 
+            if (navigateToDashboard) switchView('dashboard-view'); 
+        }
+        
+        // --- 6. INITIALIZATION ---
+        function init() {
+            firebase.initializeApp(CONFIG.firebase);
+            state.auth = firebase.auth();
+            
+            state.auth.onAuthStateChanged(user => {
+                if (user) {
+                    DOMElements.userEmail.textContent = `Welcome, ${user.email || user.phoneNumber}`;
+                    DOMElements.loginContainer.classList.add('hidden');
+                    DOMElements.dashboardContainer.classList.remove('hidden');
+                    setTimeout(() => DOMElements.dashboardContainer.classList.add('visible'), 50);
+                    fetchStudentData();
+                } else {
+                    toggleLoginView('email');
+                    DOMElements.loginContainer.classList.remove('hidden');
+                    DOMElements.dashboardContainer.classList.add('hidden');
+                    if (!state.recaptchaVerifier) {
+                         state.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+                    }
+                }
+            });
+
+            document.getElementById('login-form').addEventListener('submit', (e) => { e.preventDefault(); state.auth.signInWithEmailAndPassword(e.target.email.value, e.target.password.value).catch(err => { DOMElements.errorMessage.textContent = err.message; }); });
+            
+            document.getElementById('phone-login-form').addEventListener('submit', (e) => {
+                e.preventDefault(); const btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = 'Sending...';
+                state.auth.signInWithPhoneNumber(document.getElementById('phone-number').value, state.recaptchaVerifier)
+                    .then(res => { state.confirmationResult = res; toggleLoginView('otp'); })
+                    .catch(err => { DOMElements.errorMessage.textContent = "Error: " + err.message; if(typeof state.recaptchaVerifier.render === 'function') {state.recaptchaVerifier.render().then(id => state.recaptchaVerifier.reset(id));} })
+                    .finally(() => { btn.disabled = false; btn.textContent = 'Send OTP'; });
+            });
+
+            document.getElementById('otp-login-form').addEventListener('submit', (e) => {
+                e.preventDefault(); const btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = 'Verifying...';
+                state.confirmationResult.confirm(document.getElementById('otp-code').value)
+                    .catch(err => { DOMElements.errorMessage.textContent = "Invalid OTP. Please try again."; })
+                    .finally(() => { btn.disabled = false; btn.textContent = 'Verify OTP'; });
+            });
+
+            DOMElements.sidebarNav.addEventListener('click', (e) => { e.preventDefault(); if (e.target.tagName === 'A') switchView(e.target.getAttribute('href').substring(1)); });
+            document.getElementById('logout-btn')?.addEventListener('click', () => state.auth.signOut());
+            DOMElements.allStudentsTableBody.addEventListener('click', handleActionClick);
+            DOMElements.admissionForm.addEventListener('submit', handleFormSubmit);
+        }
+
+        return { init, resetAdmissionForm, toggleLoginView };
+    })();
+
+    document.addEventListener('DOMContentLoaded', app.init);
+    </script>
+</body>
+</html>
