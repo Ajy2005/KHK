@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karnal High School - Letter Management System</title>
+    <style>
+        :root {
+            --theme-tan: #A07855; --dark-brown: #674d3c; --header-bg: #FDF6EC;
+            --text-color: #4E443B; --editable-bg: #fffbe8;
+        }
+        body { font-family: 'Nirmala UI', Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; color: var(--text-color); }
+        .letter-container { max-width: 8.5in; margin: 20px auto; background-color: #fff; padding: 40px 50px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        
+        /* Fixed Letterhead Styles */
+        .letterhead { border: 2px solid var(--dark-brown); padding: 5px; margin-bottom: 30px; }
+        .letterhead-inner { border: 1px solid var(--theme-tan); padding: 15px; background-color: var(--header-bg); }
+        .header-grid { display: grid; grid-template-columns: 2.5fr 3.5fr 2fr; gap: 10px; align-items: start; padding-bottom: 10px; }
+        .grid-left, .grid-center, .grid-right { line-height: 1.6; }
+        .grid-left, .grid-right { font-size: 14px; }
+        .grid-center { text-align: center; padding: 0 15px; }
+        .logo { width: 110px; height: 110px; margin-top: 15px; border-radius: 8px; object-fit: cover; border: 2px solid var(--theme-tan); }
+        .institution-name { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--dark-brown); }
+        .school-name { font-size: 28px; font-weight: bold; margin: 8px 0; color: var(--theme-tan); }
+        .address { font-size: 15px; margin-top: 10px; }
+        .date-row { display: flex; justify-content: flex-end; margin-top: 5px; padding-top: 5px; border-top: 1px solid var(--theme-tan); font-size: 16px; }
+
+        /* Editable Content Styles */
+        .editable { outline: none; border: 1px dashed #cccccc; padding: 8px; background-color: var(--editable-bg); border-radius: 4px; }
+        .editable:focus { border-color: var(--theme-tan); background-color: #fff; }
+        .letter-content { display: flex; flex-direction: column; gap: 20px; }
+        #letterBody { line-height: 1.8; font-size: 16px; min-height: 300px; }
+        
+        /* --- UPDATED CONTROLS SECTION --- */
+        .controls { text-align: center; margin: 30px auto; padding: 20px; max-width: 8.5in; background-color: #fff; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        .control-section { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .control-section:last-child { border-bottom: none; margin-bottom: 0; }
+        .controls button { padding: 10px 20px; font-size: 14px; cursor: pointer; border: none; border-radius: 5px; margin: 0 5px; font-weight: bold; }
+        .controls select { padding: 10px; font-size: 14px; border-radius: 5px; border: 1px solid #ccc; }
+        #saveButton { background-color: var(--theme-tan); color: white; }
+        #loadButton, #deleteButton { background-color: #555; color: white; }
+        #newButton { background-color: #3498db; color: white; }
+        #printButton { background-color: #28a745; color: white; }
+        #statusMessage { margin-top: 10px; color: #28a745; font-weight: bold; min-height: 20px; }
+
+        @media print {
+            body { background-color: #fff; padding: 0; }
+            .letter-container { box-shadow: none; padding: 0; }
+            .letterhead-inner { background-color: var(--header-bg) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .editable { border: none; padding: 8px 0; background-color: #fff !important; }
+            .controls, .info-box { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="letter-container">
+        <!-- FIXED LETTERHEAD -->
+        <header class="letterhead">
+            <div class="letterhead-inner">
+                <!-- ... Letterhead content remains the same ... -->
+                <div class="header-grid">
+                    <div class="grid-left">
+                        <div>स्थापना : दि. ९ जून 1994</div>
+                        <div>मान्यता आदेश क्र.एस.एस.(एस.एस.एल.)एन.एल./पीआर.पुणा-४ दि.२१ एप्रिल १९९४</div>
+                        <img src="images/logo.jpeg" alt="School Logo" class="logo">
+                    </div>
+                    <div class="grid-center">
+                        <div>|| ज्ञान तेथे मान ||</div>
+                        <div class="institution-name">जवाहर शिक्षण संस्थेचे,</div>
+                        <div class="school-name">कर्नाळ हायस्कूल, कर्नाळ</div>
+                        <div class="address">ता.मिरज, जि.सांगली.<br>फोन नं. - 9022227102</div>
+                    </div>
+                    <div class="grid-right">
+                        <div>स्कूल इंडेक्स नं. 22-06-017</div>
+                        <div>शालार्थ आयडी : 04240100214</div>
+                        <div>यु.डायस नं.:२७३५०५०१७०३</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- EDITABLE LETTER CONTENT -->
+        <main class="letter-content">
+            <div id="letterDate" class="editable" contenteditable="true">दि.: [Enter Date]</div>
+            <div id="recipientInfo" class="editable" contenteditable="true"><b>प्रति,</b><br>[Recipient Name and Address Here]</div>
+            <div id="letterSubject" class="editable" contenteditable="true"><b>विषय:</b> [Subject of the Letter]</div>
+            <div id="letterBody" class="editable" contenteditable="true"><p>महोदय,</p><p>Start typing here...</p></div>
+        </main>
+    </div>
+
+    <!-- NEW CONTROLS PANEL -->
+    <div class="controls">
+        <div class="control-section">
+            <button id="saveButton">Save Current Letter</button>
+        </div>
+        <div class="control-section">
+            <label for="savedFilesDropdown">Open a Saved Letter:</label>
+            <select id="savedFilesDropdown"></select>
+            <button id="loadButton">Load Selected</button>
+            <button id="deleteButton">Delete Selected</button>
+        </div>
+        <div class="control-section">
+            <button id="newButton">New Letter</button>
+            <button id="printButton">Print Letter</button>
+        </div>
+        <div id="statusMessage"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const editableIds = [ 'letterDate', 'recipientInfo', 'letterSubject', 'letterBody' ];
+            const statusMessage = document.getElementById('statusMessage');
+            const savedFilesDropdown = document.getElementById('savedFilesDropdown');
+
+            // --- Helper Functions for Local Storage ---
+            const getSavedLetters = () => JSON.parse(localStorage.getItem('savedLetters') || '{}');
+            const saveLetters = (letters) => localStorage.setItem('savedLetters', JSON.stringify(letters));
+
+            // --- UI Functions ---
+            const showStatus = (message, isSuccess = true) => {
+                statusMessage.textContent = message;
+                statusMessage.style.color = isSuccess ? '#28a745' : '#dc3545';
+                setTimeout(() => statusMessage.textContent = '', 3000);
+            };
+
+            const populateDropdown = () => {
+                const letters = getSavedLetters();
+                const filenames = Object.keys(letters);
+                savedFilesDropdown.innerHTML = ''; // Clear existing options
+
+                if (filenames.length === 0) {
+                    const option = new Option('No saved letters', '', true, true);
+                    option.disabled = true;
+                    savedFilesDropdown.add(option);
+                    document.getElementById('loadButton').disabled = true;
+                    document.getElementById('deleteButton').disabled = true;
+                } else {
+                    filenames.forEach(name => savedFilesDropdown.add(new Option(name, name)));
+                    document.getElementById('loadButton').disabled = false;
+                    document.getElementById('deleteButton').disabled = false;
+                }
+            };
+
+            // --- Event Handler Functions ---
+            const handleSave = () => {
+                const defaultName = document.getElementById('letterSubject').innerText.replace('विषय:', '').trim() || 'Untitled Letter';
+                const filename = prompt('Enter a name for this letter:', defaultName);
+                if (!filename) return;
+
+                const letters = getSavedLetters();
+                const letterData = {};
+                editableIds.forEach(id => letterData[id] = document.getElementById(id).innerHTML);
+                
+                letters[filename] = letterData;
+                saveLetters(letters);
+                populateDropdown();
+                showStatus(`Letter "${filename}" saved successfully!`);
+            };
+
+            const handleLoad = () => {
+                const filename = savedFilesDropdown.value;
+                if (!filename) return;
+
+                const letters = getSavedLetters();
+                const letterData = letters[filename];
+                if (letterData) {
+                    editableIds.forEach(id => document.getElementById(id).innerHTML = letterData[id]);
+                    showStatus(`Letter "${filename}" loaded.`);
+                }
+            };
+
+            const handleDelete = () => {
+                const filename = savedFilesDropdown.value;
+                if (!filename) return;
+
+                if (confirm(`Are you sure you want to delete "${filename}"? This cannot be undone.`)) {
+                    const letters = getSavedLetters();
+                    delete letters[filename];
+                    saveLetters(letters);
+                    populateDropdown();
+                    showStatus(`Letter "${filename}" deleted.`, false);
+                }
+            };
+
+            const handleNew = () => {
+                document.getElementById('letterDate').innerHTML = 'दि.: [Enter Date]';
+                document.getElementById('recipientInfo').innerHTML = '<b>प्रति,</b><br>[Recipient Name and Address Here]';
+                document.getElementById('letterSubject').innerHTML = '<b>विषय:</b> [Subject of the Letter]';
+                document.getElementById('letterBody').innerHTML = '<p>महोदय,</p><p>Start typing here...</p>';
+                savedFilesDropdown.selectedIndex = -1; // Deselect any item in dropdown
+            };
+
+            // --- Attach Event Listeners ---
+            document.getElementById('saveButton').addEventListener('click', handleSave);
+            document.getElementById('loadButton').addEventListener('click', handleLoad);
+            document.getElementById('deleteButton').addEventListener('click', handleDelete);
+            document.getElementById('newButton').addEventListener('click', handleNew);
+            document.getElementById('printButton').addEventListener('click', () => window.print());
+
+            // --- Initial Load ---
+            populateDropdown();
+        });
+    </script>
+</body>
+</html>
