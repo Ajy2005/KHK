@@ -13,7 +13,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     
     <style>
-        /* --- NEW ANIMATED LOGIN PAGE STYLES --- */
         * {
             margin: 0;
             padding: 0;
@@ -25,6 +24,7 @@
             background-color: var(--primary-bg, #f8fafc);
         }
 
+        /* --- NEW LOGIN PAGE STYLES (MODIFIED TO MATCH IMAGE) --- */
         .login-section {
             position: fixed;
             top: 0;
@@ -48,7 +48,8 @@
             pointer-events: none;
         }
 
-        .login-section .trees {
+        /* Swapped the old 'trees.png' for a new 'autumn-tree.png' */
+        .login-section .tree-img {
             position: absolute;
             top: 0;
             left: 0;
@@ -59,91 +60,81 @@
             pointer-events: none;
         }
 
-        .login-section .girl {
-            position: absolute;
-            scale: 0.65;
-            pointer-events: none;
-            animation: animateGirl 15s linear infinite;
-        }
-
-        @keyframes animateGirl {
-            0% { transform: translateX(calc(100% + 100vw)); }
-            50% { transform: translateX(calc(-100% - 120vw)); }
-            50.01% { transform: translateX(calc(-100% - 120vw)) rotateY(180deg); }
-            100% { transform: translateX(calc(100% + 100vw)) rotateY(180deg); }
-        }
-
+        /* Removed the .girl animation and class */
+        
         .login-box {
             position: relative;
             padding: 40px;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(15px);
-            border: 1px solid #fff;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-            border-right: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 20px;
+            /* Updated background to a warm, semi-transparent color */
+            background: rgba(253, 230, 203, 0.7); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 25px; /* Softer corners */
             width: 100%;
-            max-width: 500px;
+            max-width: 450px; /* Adjusted max-width */
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
         }
 
         .login-box h2 {
-            position: relative;
             width: 100%;
             text-align: center;
             font-size: 2.2em;
             font-weight: 600;
-            color: #8f2c24;
-            margin-bottom: 10px;
+            /* New text color */
+            color: #8a3b24; 
+            margin-bottom: 5px;
         }
 
         .login-box .input-group { position: relative; }
         
         .login-box .input-group label {
-            color: #8f2c24;
+            /* New text color */
+            color: #8a3b24; 
             font-weight: 500;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             display: block;
         }
 
         .login-box .input-group input {
-            position: relative;
             width: 100%;
-            padding: 12px 20px;
+            padding: 14px 20px;
             outline: none;
             font-size: 1.1em;
-            color: #8f2c24;
-            border-radius: 5px;
+            /* New text color */
+            color: #8a3b24; 
+            border-radius: 15px; /* Softer input corners */
             background: #fff;
             border: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .login-box .input-group ::placeholder { color: #8f2c24a2; }
+        .login-box .input-group ::placeholder { color: #b88374; }
 
         .login-box button {
-            position: relative;
             width: 100%;
-            padding: 12px 20px;
+            padding: 14px 20px;
             border: none;
             outline: none;
-            background: #8f2c24;
+            /* New button color */
+            background: #8a3b24; 
             color: #fff;
             cursor: pointer;
             font-size: 1.25em;
             font-weight: 500;
-            transition: 0.5s;
-            border-radius: 5px;
+            transition: 0.3s;
+            border-radius: 15px; /* Softer button corners */
         }
         
-        .login-box button:hover:not(:disabled) { background: #d64c42; }
+        .login-box button:hover:not(:disabled) { background: #a14e35; }
         .login-box button:disabled { background-color:#9e6a66; cursor: not-allowed; }
 
         .switch-login-method {
             font-size: 1em;
-            color: #8f2c24;
+            /* New text color */
+            color: #8a3b24; 
             font-weight: 500;
             text-decoration: underline;
             cursor: pointer;
@@ -156,7 +147,7 @@
             font-weight: 600;
             background-color: #ffe0de;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 8px;
             text-align: center;
             min-height: 20px;
             border: 1px solid #d64c42;
@@ -185,11 +176,11 @@
             100% { top: 110%; transform: translateX(20px) rotate(225deg); }
         }
 
-        /* --- DASHBOARD STYLES --- */
+        /* --- DASHBOARD STYLES (UNCHANGED) --- */
         :root { --primary-bg: #f8fafc; --sidebar-bg: #1e293b; --sidebar-text: #cbd5e1; --sidebar-hover-bg: #334155; --accent-color: #4f46e5; --accent-color-dark: #4338ca; --danger-color: #dc2626; --danger-color-dark: #b91c1c; --text-dark: #0f172a; --text-light: #64748b; --card-bg: #ffffff; --border-color: #e2e8f0; --shadow-color: rgba(149, 157, 165, 0.1); }
         .hidden { display: none !important; }
         .dashboard-container{display:flex;height:100vh;opacity:0;transition:opacity .5s ease}.dashboard-container.visible{opacity:1}
-        .sidebar{width:260px;background-color:var(--sidebar-bg);color:var(--sidebar-text);display:flex;flex-direction:column;flex-shrink:0;padding:20px;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+        .sidebar{width:260px;background-color:var(--sidebar-bg);color:var(--sidebar-text);display:flex;flex-direction:column;flex-shrink:0;padding:20px;position:fixed;top:0;left:0;height:100vh;overflow-y:auto; transition: left 0.3s ease-in-out;}
         .sidebar-header{text-align:center;margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid var(--sidebar-hover-bg)}
         .sidebar-logo{max-width:100px;margin-bottom:15px;border-radius:50%;border:3px solid var(--sidebar-hover-bg)}
         .sidebar-header h2{font-size:1.4rem;font-weight:600;color:#fff}
@@ -197,7 +188,7 @@
         .sidebar-nav li a{display:flex;align-items:center;color:var(--sidebar-text);text-decoration:none;padding:15px 20px;border-radius:8px;margin-bottom:10px;transition:background-color .2s,color .2s;font-weight:500}
         .sidebar-nav li a.active,.sidebar-nav li a:hover{background-color:var(--accent-color);color:#fff}
         .sidebar-nav li a i{margin-right:15px;width:20px;text-align:center;font-size:1.1rem}
-        .main-content{margin-left:260px;width:calc(100% - 260px);padding:30px;display:flex;flex-direction:column;height:100vh}
+        .main-content{margin-left:260px;width:calc(100% - 260px);padding:30px;display:flex;flex-direction:column;height:100vh; transition: margin-left 0.3s ease-in-out;}
         .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-shrink:0}
         .header-title-wrapper { display: flex; align-items: center; gap: 20px; }
         .header h1{font-size:2.2rem;color:var(--text-dark);font-weight:700}
@@ -211,25 +202,15 @@
         .content-view iframe{width:100%;height:100%;border:1px solid var(--border-color);border-radius:12px}
         @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
         
-        /* --- NEW STYLES FOR PHOTO CONTAINER --- */
-        .photo-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-        }
-        .photo-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px var(--shadow-color);
-        }
+        .photo-container { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-color: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); }
+        .photo-container img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 25px var(--shadow-color); }
+        .menu-toggle-btn { display: none; background: none; border: none; color: var(--text-dark); font-size: 1.5rem; cursor: pointer; }
+        .content-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4); z-index: 998; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .content-overlay.active { display: block; opacity: 1; }
+
+        @media (max-width: 992px) { .menu-toggle-btn { display: block; } .sidebar { left: -260px; z-index: 999; box-shadow: 5px 0 15px rgba(0,0,0,0.1); } .sidebar.open { left: 0; } .main-content { margin-left: 0; width: 100%; padding: 20px; } .header { flex-wrap: wrap; gap: 15px; } .header h1 { font-size: 1.8rem; } .user-profile span { display: none; } }
+        @media (max-width: 768px) { .login-box { width: 90%; padding: 25px; } .login-box h2 { font-size: 1.8em; } .header-title-wrapper { gap: 10px; } .header h1 { font-size: 1.5rem; } .open-sheet-btn { padding: 6px 12px; font-size: 0.8rem; } .user-profile { gap: 10px; } }
+        @media (max-width: 576px) { .login-section .tree-img { display: none; } }
     </style>
 </head>
 <body>
@@ -241,9 +222,10 @@
                     <div><img src="images/leaf_01.png"></div><div><img src="images/leaf_02.png"></div><div><img src="images/leaf_03.png"></div><div><img src="images/leaf_04.png"></div><div><img src="images/leaf_01.png"></div><div><img src="images/leaf_02.png"></div><div><img src="images/leaf_03.png"></div><div><img src="images/leaf_04.png"></div>
                 </div>
             </div>
-            <img src="images/bg.jpg" class="bg">
-            <img src="images/girl.png" class="girl">
-            <img src="images/trees.png" class="trees">
+            <!-- NOTE: Replace with your actual background image -->
+            <img src="images/autumn-bg.jpg" class="bg"> 
+            <!-- NOTE: Replace with your actual tree image. This replaces the old 'girl.png' and 'trees.png' -->
+            <img src="images/autumn-tree.png" class="tree-img"> 
             
             <div class="login-box">
                 <h2>Staff Login</h2>
@@ -267,7 +249,7 @@
 
                 <div id="otp-login-view" class="hidden">
                     <form id="otp-login-form">
-                        <p style="color: #8f2c24; text-align: center; margin-bottom: 15px;">Enter the 6-digit code sent to your mobile.</p>
+                        <p style="color: #8a3b24; text-align: center; margin-bottom: 15px;">Enter the 6-digit code sent to your mobile.</p>
                         <div class="input-group"><label for="otp-code">OTP Code</label><input type="number" id="otp-code" required></div>
                         <button id="verify-otp-btn" type="submit">Verify OTP</button>
                     </form>
@@ -280,8 +262,10 @@
         </section>
     </div>
 
+    <!-- The Dashboard HTML remains unchanged -->
     <div id="dashboard-container" class="dashboard-container hidden">
-        <aside class="sidebar">
+        <div id="content-overlay" class="content-overlay"></div>
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <img src="images/logo.jpeg" alt="Karnal Highschool Logo" class="sidebar-logo">
                 <h2>Staff Dashboard</h2>
@@ -298,6 +282,7 @@
         <main class="main-content">
             <header class="header">
                 <div class="header-title-wrapper">
+                    <button id="menu-toggle-btn" class="menu-toggle-btn"><i class="fa-solid fa-bars"></i></button>
                     <h1 id="main-header-title">Dashboard</h1>
                     <a href="#" id="open-sheet-btn" class="open-sheet-btn hidden" target="_blank">
                         Edit Sheet <i class="fa-solid fa-arrow-up-right-from-square"></i>
@@ -325,6 +310,7 @@
         </main>
     </div>
 
+    <!-- The JavaScript remains unchanged -->
     <script>
     const app = (() => {
         // --- 1. CORE SETUP & CONFIGURATION ---
@@ -349,6 +335,9 @@
             errorMessage: document.getElementById('error-message'),
             mainHeaderTitle: document.getElementById('main-header-title'),
             openSheetBtn: document.getElementById('open-sheet-btn'),
+            menuToggleBtn: document.getElementById('menu-toggle-btn'),
+            sidebar: document.getElementById('sidebar'),
+            contentOverlay: document.getElementById('content-overlay'),
         };
         
         // --- 2. UI & NAVIGATION ---
@@ -372,6 +361,10 @@
             } else {
                 DOMElements.openSheetBtn.classList.add('hidden');
             }
+            
+            if (window.innerWidth <= 992) {
+                closeMobileMenu();
+            }
         }
         
         function showErrorMessage(message) {
@@ -384,6 +377,15 @@
             DOMElements.emailLoginView.classList.toggle('hidden', view !== 'email');
             DOMElements.phoneLoginView.classList.toggle('hidden', view !== 'phone');
             DOMElements.otpLoginView.classList.toggle('hidden', view !== 'otp');
+        }
+
+        function openMobileMenu() {
+            DOMElements.sidebar.classList.add('open');
+            DOMElements.contentOverlay.classList.add('active');
+        }
+        function closeMobileMenu() {
+            DOMElements.sidebar.classList.remove('open');
+            DOMElements.contentOverlay.classList.remove('active');
         }
         
         // --- 3. INITIALIZATION & AUTH ---
@@ -402,6 +404,8 @@
                         document.querySelectorAll('.sidebar-nav a').forEach(link => {
                             link.addEventListener('click', handleNavigation);
                         });
+                        DOMElements.menuToggleBtn.addEventListener('click', openMobileMenu);
+                        DOMElements.contentOverlay.addEventListener('click', closeMobileMenu);
                         state.navInitialized = true;
                     }
                     document.querySelector('.sidebar-nav a[href="#dashboard-view"]').click();
@@ -411,7 +415,11 @@
                     DOMElements.loginContainer.classList.remove('hidden');
                     DOMElements.dashboardContainer.classList.add('hidden');
                     DOMElements.dashboardContainer.classList.remove('visible');
-                    state.navInitialized = false;
+                    if(state.navInitialized) {
+                        DOMElements.menuToggleBtn.removeEventListener('click', openMobileMenu);
+                        DOMElements.contentOverlay.removeEventListener('click', closeMobileMenu);
+                        state.navInitialized = false;
+                    }
                     if (!state.recaptchaVerifier) {
                          state.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
                     }
@@ -454,6 +462,4 @@
     document.addEventListener('DOMContentLoaded', app.init);
     </script>
 </body>
-
 </html>
-
