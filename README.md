@@ -37,19 +37,7 @@ To get a local copy up and running, follow these simple steps.
 
 You just need a modern web browser.
 
-### Setup
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/Ajy2005/KHK.git
-    ```
-
-2.  **Navigate to the project folder:**
-    ```bash
-    cd KHK
-    ```
-
-3.  **Open `index.html` in your browser.**
+ **Open `index.html` in your browser.**
     You can simply drag the `index.html` file into a browser window or right-click and choose "Open with...".
 
 ## 🤝 Contributing
