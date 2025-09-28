@@ -7,7 +7,7 @@ A clean, fast, and fully responsive website designed for KHK Scans. This project
 [![Website Status](https://img.shields.io/website?up_message=online&url=https%3A%2F%2Fajy2005.github.io%2FKHK%2F)](https://ajy2005.github.io/KHK/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-## 🚀 Live Demo
+## 🚀 Karnal Highschool,Karnal Web
 
 Experience the live version of the website here:
 
