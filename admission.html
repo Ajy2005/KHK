@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karnal HighSchool, Karnal - Home</title>
+    <title>Admission - Karnal HighSchool, Karnal</title>
       <!-- Basic Favicon -->
     <link rel="icon" href="web logo/favicon.ico" sizes="any">
     <!-- SVG Favicon (for modern browsers) -->
@@ -20,7 +20,7 @@
     
     <link rel="stylesheet" href="styles.css">
 
-    <!-- NEW: Internal CSS for the login link styles -->
+    <!-- Internal CSS for the login link styles -->
     <style>
         .top-header .container > .width-100 {
             display: flex;
@@ -40,6 +40,45 @@
         .staff-login-link i {
             margin-right: 6px;
         }
+        /* Custom styles for the admission page content */
+        .admission-content .content-section {
+            margin-bottom: 30px;
+        }
+        .admission-content h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .admission-content p, .admission-content li {
+            line-height: 1.7;
+            color: #555;
+        }
+        .admission-content ul, .admission-content ol {
+            padding-left: 20px;
+        }
+        .admission-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .admission-table th, .admission-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .admission-table th {
+            background-color: #f7f7f7;
+        }
+        .contact-card {
+            background-color: #f9f9f9;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+        }
+        .contact-card p {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -47,16 +86,14 @@
     <!-- TOP HEADER WITH LATEST NEWS -->
     <div class="width-100 top-header">
         <div class="container">
-            <!-- UPDATED: This div is now a flex container -->
             <div class="width-100">
                 <div class="news-ticker-container" style="display: flex; align-items: center;">
                     <b class="news-list">Latest News:</b>
                     <marquee class="headquote" behavior="scroll" direction="left">
-                        <span class="news-item">Independence Day celebration on August 15th. Join us for flag hoisting and cultural events!</span>
+                        <span class="news-item">Admissions for the academic year 2025-2026 are now open.</span>
                     </marquee>
                 </div>
 
-                <!-- NEW: Staff Login Link -->
                 <div class="staff-login-link">
                     <a href="login.html">
                         <i class="fa-solid fa-right-to-bracket"></i>
@@ -67,7 +104,7 @@
         </div>
     </div>
 
-    <!-- MAIN HEADER WITH LOGO, SCHOOL NAME, AND NAVIGATION (Unchanged) -->
+    <!-- MAIN HEADER WITH LOGO, SCHOOL NAME, AND NAVIGATION -->
     <header class="width-100 header-menu">
         <div class="container">
             <div class="header-top-content">
@@ -85,9 +122,9 @@
             <!-- Main Navigation Menu -->
             <nav class="main-navigation">
                 <ul class="main-menu">
-                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="index.html">Home</a></li>
                     <li><a href="#">About Us</a></li>
-                    <li><a href="admission.html">Admission</a></li>
+                    <li><a href="admission.html" class="active">Admission</a></li>
                     <li><a href="gallery.html">Gallery</a></li>
                     <li><a href="#">Notice Board</a></li>
                     <li><a href="#">Contact Us</a></li>
@@ -96,23 +133,81 @@
         </div>
     </header>
 
-    <!-- SLIDER / HERO IMAGE SECTION (Unchanged) -->
-    <div class="width-100 slider-container">
-        <img class="slider" src="images/slider1.jpeg" alt="Karnal High School building and grounds">
-    </div>
-
-    <!-- MAIN CONTENT AREA (Unchanged) -->
+    <!-- MAIN CONTENT AREA -->
     <div class="width-100 margin-top-50">
         <div class="container main-content-area">
-            <div class="main-content-left">
-                <div class="welcome-section">
-                    <div class="heading-sect">
-                        <h2 class="head-title">Welcome to Karnal HighSchool</h2>
-                    </div>
-                    <p>Welcome to Karnal Highschool, a cornerstone of learning and community in the Miraj block since 1964. With a proud legacy of providing quality, co-educational instruction in the Marathi medium, we are dedicated to nurturing the potential within every student from Grade 5 to 10.
-Our school provides a safe and supportive environment where students are encouraged to thrive. From our well-maintained 
-                        classrooms and a library rich with over 2,400 books to a playground for physical development, we focus on the holistic growth of our students. We are committed to their well-being, ensuring a healthy learning atmosphere with amenities like clean drinking water and a nourishing mid-day meal prepared on-site. By integrating modern tools like computers into our teaching, we strive to build a strong academic foundation while fostering curiosity, character, and the skills needed to succeed in the future.</p>
+            <div class="main-content-left admission-content">
+                <div class="heading-sect">
+                    <h2 class="head-title">Admission Process</h2>
                 </div>
+
+                <div class="content-section">
+                    <h3>A Warm Welcome to Prospective Students</h3>
+                    <p>We appreciate your interest in Karnal HighSchool. Our school is dedicated to fostering a supportive and engaging learning community. The admission process is straightforward and designed to help us understand your child's needs. We look forward to welcoming new members to our school family.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Key Admission Dates</h3>
+                    <table class="admission-table">
+                        <tr>
+                            <th>Event</th>
+                            <th>Date</th>
+                        </tr>
+                        <tr>
+                            <td>Distribution of Admission Forms</td>
+                            <td>From March 1st, 2025</td>
+                        </tr>
+                        <tr>
+                            <td>Last Date for Submission of Forms</td>
+                            <td>April 15th, 2025</td>
+                        </tr>
+                        <tr>
+                            <td>Display of Selected Candidates List</td>
+                            <td>April 30th, 2025</td>
+                        </tr>
+                        <tr>
+                            <td>Last Date for Fee Payment</td>
+                            <td>May 15th, 2025</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="content-section">
+                    <h3>How to Apply</h3>
+                    <ol>
+                        <li>Collect the admission form from the school office between 10:00 AM and 2:00 PM on working days.</li>
+                        <li>Fill in the application form with complete and accurate information.</li>
+                        <li>Attach all the required documents with the form.</li>
+                        <li>Submit the completed form at the school office before the due date.</li>
+                    </ol>
+                </div>
+
+                <div class="content-section">
+                    <h3>Eligibility</h3>
+                    <p>Admissions are available for students from Grade 5 to Grade 10. The candidate must have successfully passed the final examinations of the preceding class from a recognized school.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Documents Required</h3>
+                    <ul>
+                        <li>Photocopy of the student's Birth Certificate.</li>
+                        <li>Original School Leaving Certificate (from the previous school).</li>
+                        <li>Photocopy of the previous year's academic report card.</li>
+                        <li>Two recent passport-sized photographs of the student.</li>
+                        <li>Photocopy of the student's Aadhaar Card.</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <h3>Admission Enquiries</h3>
+                    <div class="contact-card">
+                        <p>For any questions regarding the admission process, please get in touch with our school office.</p>
+                        <p><strong>Contact Person:</strong> School Administrator</p>
+                        <p><strong>Phone:</strong> <a href="tel:+919022227102">+91 9022227102</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:panditmore68@gmail.com">panditmore68@gmail.com</a></p>
+                    </div>
+                </div>
+
             </div>
             <div class="main-content-right">
                 <div class="latest-news">
@@ -130,28 +225,6 @@ Our school provides a safe and supportive environment where students are encoura
                         </ul>
                     </marquee>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PHOTO GALLERY PREVIEW SECTION (Unchanged) -->
-    <div id="gallery-preview" class="width-100 margin-top-50 gallery-section">
-        <div class="container">
-            <div class="section-heading">
-                <h2>Glimpses of Our School</h2>
-            </div>
-            <div class="gallery-grid">
-                <!-- Showing only the first 6 images as a preview, linking to the full gallery page -->
-                <div class="gallery-item"><a href="gallery.html"><img src="images/school-gate.jpg" alt="School Entrance"><div class="caption">School Entrance</div></a></div>
-                <div class="gallery-item"><a href="gallery.html"><img src="images/school-building-main.jpg" alt="Main Building"><div class="caption">Main Building</div></a></div>
-                <div class="gallery-item"><a href="gallery.html"><img src="images/playground.jpg" alt="Playground"><div class="caption">School Playground</div></a></div>
-                <div class="gallery-item"><a href="gallery.html"><img src="images/computer-lab-1.jpg" alt="Computer Lab"><div class="caption">Computer Lab</div></a></div>
-                <div class="gallery-item"><a href="gallery.html"><img src="images/assembly-hall-1.jpg" alt="Assembly Hall"><div class="caption">Assembly Hall</div></a></div>
-                <div class="gallery-item"><a href="gallery.html"><img src="images/students-courtyard.jpg" alt="Students in Courtyard"><div class="caption">Our Students</div></a></div>
-            </div>
-            <!-- Button to view the full gallery -->
-            <div class="gallery-preview-btn">
-                <a href="gallery.html" class="btn-view-all">View All Photos</a>
             </div>
         </div>
     </div>
@@ -183,11 +256,10 @@ Our school provides a safe and supportive environment where students are encoura
                     <ul class="quick-links">
                         <li><a href="index.html">Home</a></li>
                         <li><a href="#">About Us</a></li>
-                        <li><a href="#">Admission</a></li>
+                        <li><a href="admission.html">Admission</a></li>
                         <li><a href="gallery.html">Gallery</a></li>
                         <li><a href="#">Notice Board</a></li>
                         <li><a href="#">Contact Us</a></li>
-                        <!-- ADDED: Staff Login Link -->
                         <li><a href="login.html">Staff Login</a></li>
                         <li><a href="security-policy.html">Security Policy</a></li>
                     </ul>
