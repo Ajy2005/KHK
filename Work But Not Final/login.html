@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karnal Highschool - Staff Dashboard</title>
+    <link rel="icon" href="images/logo.jpeg" sizes="any">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
+
+        /* Login Page Styles */
+        .login-section { position: fixed; top: 0; left: 0; display: flex; justify-content: center; align-items: center; width: 100%; height: 100vh; overflow: hidden; z-index: 1000; }
+        .login-section .bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .login-section .tree-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 100; pointer-events: none; }
+        .login-box { position: relative; padding: 40px; background: rgba(253, 230, 203, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 25px; width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 25px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1); }
+        .login-box h2 { width: 100%; text-align: center; font-size: 2.2em; font-weight: 600; color: #8a3b24; margin-bottom: 5px; }
+        .login-box .input-group { position: relative; }
+        .login-box label { color: #8a3b24; font-weight: 500; margin-bottom: 8px; display: block; }
+        .login-box input { width: 100%; padding: 14px 20px; outline: none; font-size: 1.1em; color: #8a3b24; border-radius: 15px; background: #fff; border: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .login-box button { width: 100%; padding: 14px 20px; border: none; outline: none; background: #8a3b24; color: #fff; cursor: pointer; font-size: 1.25em; font-weight: 500; transition: 0.3s; border-radius: 15px; }
+        .login-box button:hover:not(:disabled) { background: #a14e35; }
+        .switch-login-method { font-size: 1em; color: #8a3b24; font-weight: 500; text-decoration: underline; cursor: pointer; text-align: center; margin-top: 10px; }
+        .error-message { color: #d64c42; font-weight: 600; background-color: #ffe0de; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #d64c42; }
+
+        /* Dashboard Styles */
+        .hidden { display: none !important; }
+        .dashboard-container { display:flex; height:100vh; opacity:0; transition:opacity .5s ease; }
+        .dashboard-container.visible { opacity:1; }
+        .sidebar { width:260px; background-color:#1e293b; color:#cbd5e1; display:flex; flex-direction:column; padding:20px; position:fixed; top:0; left:0; height:100vh; }
+        .sidebar-header { text-align:center; margin-bottom:30px; padding-bottom:20px; border-bottom:1px solid #334155; }
+        .sidebar-logo { max-width:100px; margin-bottom:15px; border-radius:50%; border:3px solid #334155; }
+        .sidebar-nav ul { list-style:none; }
+        .sidebar-nav a { display:flex; align-items:center; color:#cbd5e1; text-decoration:none; padding:15px 20px; border-radius:8px; margin-bottom:10px; transition:all .2s; }
+        .sidebar-nav a:hover, .sidebar-nav a.active { background-color:#4f46e5; color:#fff; }
+        .sidebar-nav i { margin-right:15px; width:20px; text-align:center; }
+        .main-content { margin-left:260px; width:calc(100% - 260px); padding:30px; display:flex; flex-direction:column; height:100vh; }
+        .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; }
+        .header h1 { font-size:2.2rem; color:#0f172a; }
+        .user-profile { display:flex; align-items:center; gap:15px; }
+        .logout-btn { background:#fee2e2; border:none; color:#dc2626; font-size:1.2rem; cursor:pointer; border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+        .logout-btn:hover { background-color:#fecaca; }
+        .content-wrapper { flex-grow:1; overflow:hidden; }
+        .content-view { width:100%; height:100%; }
+        .content-view iframe { width:100%; height:100%; border:1px solid #e2e8f0; border-radius:12px; }
+
+        @media (max-width: 992px) {
+            .main-content { margin-left: 0; width: 100%; }
+            .sidebar { left: -260px; z-index: 999; }
+            .sidebar.open { left: 0; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="login-container">
+        <section class="login-section">
+            <img src="Images/autumn-bg.jpg" class="bg" alt="Background"> 
+            <img src="Images/autumn-tree.png" class="tree-img" alt="Tree"> 
+            <div class="login-box">
+                <h2>Staff Login</h2>
+                <div id="email-login-view">
+                    <form id="login-form">
+                        <div class="input-group"><label for="email">Email Address</label><input type="email" id="email" required placeholder="you@example.com"></div>
+                        <div class="input-group"><label for="password">Password</label><input type="password" id="password" required placeholder="••••••••"></div>
+                        <button type="submit">Login</button>
+                    </form>
+                    <p class="switch-login-method" onclick="app.toggleLoginView('phone')">Login with Mobile OTP</p>
+                </div>
+                <div id="phone-login-view" class="hidden">
+                    <form id="phone-login-form">
+                        <div class="input-group"><label for="phone-number">Mobile Number</label><input type="tel" id="phone-number" placeholder="+91 98765 43210" required></div>
+                        <button id="send-otp-btn" type="submit">Send OTP</button>
+                    </form>
+                    <p class="switch-login-method" onclick="app.toggleLoginView('email')">Login with Email</p>
+                </div>
+                <div id="otp-login-view" class="hidden">
+                    <form id="otp-login-form">
+                        <p style="text-align: center;">Enter the 6-digit code sent to your mobile.</p>
+                        <div class="input-group"><label for="otp-code">OTP Code</label><input type="number" id="otp-code" required></div>
+                        <button id="verify-otp-btn" type="submit">Verify OTP</button>
+                    </form>
+                    <p class="switch-login-method" onclick="app.toggleLoginView('phone')">Change Number</p>
+                </div>
+                <p id="error-message" class="error-message hidden"></p>
+                <div id="recaptcha-container"></div>
+            </div>
+        </section>
+    </div>
+
+    <div id="dashboard-container" class="dashboard-container hidden">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="images/logo.jpeg" alt="Karnal Highschool Logo" class="sidebar-logo">
+                <h2>Staff Dashboard</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#dashboard-view" class="active"><i class="fa-solid fa-table-columns"></i> Dashboard</a></li>
+                    <li><a href="#pm-poshan-view"><i class="fa-solid fa-utensils"></i> PM Poshan</a></li>
+                    <li><a href="#attendance-scan-view"><i class="fa-solid fa-qrcode"></i> Attendance Scan</a></li>
+                    <li><a href="#LetterHead"><i class="fas fa-school"></i> Letter Head</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <h1 id="main-header-title">Dashboard</h1>
+                <div class="user-profile">
+                    <span id="user-email"></span>
+                    <button id="logout-btn" class="logout-btn" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </div>
+            </header>
+            <div class="content-wrapper">
+                <section id="dashboard-view" class="content-view">
+                   <iframe src="https://script.google.com/macros/s/AKfycbyl_3gKLrWZsllCxoSesmhIqOelazIhZ9EzFHZ6BkP5jEVRgIYS70LuagLacHO8Ijpl/exec"></iframe>
+                </section>
+                <section id="attendance-scan-view" class="content-view hidden">
+                  <iframe src="https://script.google.com/macros/s/AKfycbz2RfJAiu3c13KpKklTe0NLgTXXF3OP87lqAZCbpRANVFvl5PlG7txHxGVn-pgz3Xc/exec" allow="camera"></iframe>
+                </section>
+                <section id="LetterHead" class="content-view hidden">
+                   <iframe src="https://script.google.com/macros/s/AKfycbz2oaQ7rSEg1gQIjvXZbKwoloeMJgat4rd7Z1s6W-7x9XCZK-At-nIvILXeRn3ffhWNBQ/exec"></iframe>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    const app = (() => {
+        const CONFIG = {
+            firebase: { apiKey: "AIzaSyCu9C0ZpPnKzPCJ11gQc7Vlk3lnfaJH9fU", authDomain: "my-login-app-df9a7.firebaseapp.com", projectId: "my-login-app-df9a7", storageBucket: "my-login-app-df9a7.appspot.com", messagingSenderId: "325062660131", appId: "1:325062660131:web:09965afc828fcb26d76196" },
+        };
+        const state = { auth: null, recaptchaVerifier: null, confirmationResult: null };
+        const DOMElements = {
+            loginContainer: document.getElementById('login-container'),
+            dashboardContainer: document.getElementById('dashboard-container'),
+            userEmail: document.getElementById('user-email'),
+            emailLoginView: document.getElementById('email-login-view'),
+            phoneLoginView: document.getElementById('phone-login-view'),
+            otpLoginView: document.getElementById('otp-login-view'),
+            errorMessage: document.getElementById('error-message'),
+            mainHeaderTitle: document.getElementById('main-header-title'),
+        };
+        
+        function handleNavigation(e) {
+            e.preventDefault();
+            const targetId = e.currentTarget.getAttribute('href').substring(1);
+            document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            document.querySelectorAll('.content-view').forEach(view => view.classList.toggle('hidden', view.id !== targetId));
+            DOMElements.mainHeaderTitle.textContent = e.currentTarget.innerText.trim();
+        }
+        
+        function showErrorMessage(message) {
+            DOMElements.errorMessage.textContent = message;
+            DOMElements.errorMessage.classList.remove('hidden');
+        }
+
+        function toggleLoginView(view) {
+            DOMElements.errorMessage.classList.add('hidden');
+            DOMElements.emailLoginView.classList.toggle('hidden', view !== 'email');
+            DOMElements.phoneLoginView.classList.toggle('hidden', view !== 'phone');
+            DOMElements.otpLoginView.classList.toggle('hidden', view !== 'otp');
+        }
+        
+        function init() {
+            firebase.initializeApp(CONFIG.firebase);
+            state.auth = firebase.auth();
+            
+            state.auth.onAuthStateChanged(user => {
+                if (user) {
+                    DOMElements.userEmail.textContent = user.email || user.phoneNumber;
+                    DOMElements.loginContainer.classList.add('hidden');
+                    DOMElements.dashboardContainer.classList.remove('hidden');
+                    setTimeout(() => DOMElements.dashboardContainer.classList.add('visible'), 50);
+                    document.querySelectorAll('.sidebar-nav a').forEach(link => link.addEventListener('click', handleNavigation));
+                } else {
+                    toggleLoginView('email');
+                    DOMElements.loginContainer.classList.remove('hidden');
+                    DOMElements.dashboardContainer.classList.add('hidden');
+                    DOMElements.dashboardContainer.classList.remove('visible');
+                    if (!state.recaptchaVerifier) {
+                         state.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+                    }
+                }
+            });
+
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                state.auth.signInWithEmailAndPassword(e.target.email.value, e.target.password.value)
+                    .catch(err => { showErrorMessage(err.message); });
+            });
+            
+            document.getElementById('phone-login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                state.auth.signInWithPhoneNumber(document.getElementById('phone-number').value, state.recaptchaVerifier)
+                    .then(res => { state.confirmationResult = res; toggleLoginView('otp'); })
+                    .catch(err => { showErrorMessage("Error: " + err.message); });
+            });
+
+            document.getElementById('otp-login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                state.confirmationResult.confirm(document.getElementById('otp-code').value)
+                    .catch(err => { showErrorMessage("Invalid OTP. Please try again."); });
+            });
+
+            document.getElementById('logout-btn').addEventListener('click', () => state.auth.signOut());
+        }
+
+        return { init, toggleLoginView };
+    })();
+
+    document.addEventListener('DOMContentLoaded', app.init);
+    </script>
+</body>
+</html>
