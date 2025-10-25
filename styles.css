@@ -619,3 +619,58 @@ body {
     list-style-position: inside;
     padding-left: 10px;
 }
+/* --- 12. Gallery Login Link Styles (NEW) --- */
+.staff-login-link a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+.staff-login-link a:hover {
+            color: #ffdddd;
+    }
+.staff-login-link i {
+            margin-right: 6px;
+        }
+/* --- 13. Mini-Bot Button Styles (NEW) --- */
+.mini-bot-button {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: #d9534f; /* Theme Red */
+    color: white;
+    padding: 12px 18px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 999;
+    transition: all 0.3s ease;
+}
+
+.mini-bot-button:hover {
+    background-color: #c9302c; /* Darker Red */
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+.mini-bot-button i {
+    font-size: 1.5rem;
+}
+
+/* Hide text on smaller screens */
+@media (max-width: 768px) {
+    .mini-bot-button span {
+        display: none;
+    }
+    .mini-bot-button {
+        padding: 15px; /* Make it circular */
+        height: 55px;
+        width: 55px;
+        justify-content: center;
+    }
+}        
